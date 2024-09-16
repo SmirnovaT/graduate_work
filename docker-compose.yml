@@ -1,0 +1,3 @@
+include:
+    - ./movies/fastapi-solutions/docker-compose.yml
+    - ./assistant/docker-compose.yml/

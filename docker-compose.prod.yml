@@ -1,0 +1,43 @@
+services:
+  assistant_service:
+    expose:
+      - 8001
+    ports:
+      - "8001:8001"
+    profiles:
+      - assistant
+      - all
+
+  assistant_cache:
+    expose:
+      - 6379
+    ports:
+      - "6379:6379"
+    profiles:
+      - assistant
+      - all
+
+  movies_service:
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    profiles:
+      - movies
+      - all
+
+  movies_search:
+    ports:
+      - "9200:9200"
+    profiles:
+      - movies
+      - all
+
+  movies_nginx:
+    expose:
+      - 80
+    ports:
+      - "80:80"
+    profiles:
+      - movies
+      - all

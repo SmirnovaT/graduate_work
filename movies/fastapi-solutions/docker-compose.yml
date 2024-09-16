@@ -1,0 +1,47 @@
+services:
+  movies_service:
+    build: .
+    restart: always
+    depends_on:
+      movies_cache:
+        condition: service_started
+    profiles:
+      - movies
+      - all
+
+  movies_search:
+    image: krissmelikova/awesome_repository:v1
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - cluster.routing.allocation.disk.threshold_enabled=false
+    healthcheck:
+       test: curl -s http://fastapi-solutions-search-1:9200
+       interval: 30s
+       timeout: 10s
+       retries: 50
+    profiles:
+      - movies
+      - all
+
+  movies_cache:
+    image: redis:7.2.4-alpine
+    environment:
+      REDIS_USER: ${REDIS_USER}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    volumes:
+     - ./redis-data:/var/lib/redis
+    profiles:
+      - movies
+      - all
+
+  movies_nginx:
+    image: nginx:1.25.4
+    restart: always
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - movies_service
+    profiles:
+      - movies
+      - all
