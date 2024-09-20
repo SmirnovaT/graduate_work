@@ -1,8 +1,6 @@
 FROM python:3.12-slim-bullseye
 
 WORKDIR /opt/app
-RUN adduser -D app_user
-USER app_user
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -17,5 +15,10 @@ COPY pyproject.toml poetry.lock ./
 RUN poetry install
 
 COPY . .
+
+RUN groupadd -r web && useradd -d /opt/app-r -g web web \
+     && chown web:web -R /opt/app
+
+USER web
 
 CMD ["gunicorn", "src.main:app", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8001"]
